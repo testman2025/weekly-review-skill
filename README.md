@@ -14,7 +14,7 @@
 
 1. **CLI**：直接生成 Markdown 复盘报告或原始 JSON。
 2. **MCP server**：通过 stdio JSON-RPC 暴露 `run_weekly_review` 工具，任何支持 MCP 的 agent 都能调用。
-3. **WorkBuddy SKILL**：在 WorkBuddy 中安装 `skills/workbuddy/SKILL.md` 后可直接对话触发。
+3. **WorkBuddy SKILL**：在 WorkBuddy 中安装 `skills/weekly-review/SKILL.md` 后可直接对话触发。
 
 ## 安装
 
@@ -98,7 +98,7 @@ weekly-review --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.m
 
 ### WorkBuddy
 
-复制 `skills/workbuddy/SKILL.md` 到 `~/.workbuddy/skills/weekly-review/SKILL.md`。
+复制 `skills/weekly-review/SKILL.md` 到 `~/.workbuddy/skills/weekly-review/SKILL.md`。
 
 或直接把本仓库作为 WorkBuddy skill 目录安装。
 

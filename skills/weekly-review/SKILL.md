@@ -1,4 +1,5 @@
 ---
+name: weekly-review
 summary: "周度复盘 skill：读取 workbuddy.db，生成一页看板、项目分析、根因归因、动作台账、长会话对齐。"
 read_when:
   - 用户要求"周度复盘"
