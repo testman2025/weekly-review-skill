@@ -1,10 +1,6 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "weekly-review-skill"
-version = "0.1.0"
+version = "1.1.0"
 description = "通用周度复盘 skill：固化复盘底座，不固化每周成品。支持 CLI / MCP / Agent SKILL。"
 readme = "README.md"
 license = { text = "MIT" }
@@ -22,19 +18,4 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-]
-
-[project.scripts]
-weekly-review = "weekly_review.cli:main"
-weekly-review-mcp = "weekly_review.mcp_server:serve"
-
-[tool.hatch.build.targets.wheel]
-packages = ["skills/weekly-review/weekly_review"]
-
-[tool.hatch.build.targets.sdist]
-include = [
-    "/skills",
-    "/automations",
-    "/README.md",
-    "/pyproject.toml",
 ]

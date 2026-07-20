@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from weekly_review.analyzer import WeeklyReviewAnalyzer
+from analyzer import WeeklyReviewAnalyzer
 
 
 def test_default_week_range() -> None:

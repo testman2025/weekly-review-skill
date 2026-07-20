@@ -17,8 +17,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from .analyzer import ProjectBucket, ReviewResult, SessionRecord
-from .utils import fmt_hours, safe_div, truncate
+from analyzer import ProjectBucket, ReviewResult, SessionRecord
+from utils import fmt_hours, safe_div, truncate
 
 
 class ReportBuilder:

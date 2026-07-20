@@ -12,8 +12,8 @@ import sys
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from .analyzer import WeeklyReviewAnalyzer
-from .report import ReportBuilder
+from analyzer import WeeklyReviewAnalyzer
+from report import ReportBuilder
 
 
 TOOLS_SCHEMA = {

@@ -8,8 +8,8 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from .analyzer import WeeklyReviewAnalyzer
-from .report import ReportBuilder
+from analyzer import WeeklyReviewAnalyzer
+from report import ReportBuilder
 
 
 def default_week_range() -> tuple[datetime, datetime]:

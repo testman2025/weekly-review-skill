@@ -23,11 +23,12 @@
 git clone https://github.com/testman2025/weekly-review-skill.git
 cd weekly-review-skill
 
-# 2. 安装（推荐用 uv / pip）
-pip install -e .
+# 2. 无需安装：本 skill 零第三方依赖，仅需 Python ≥ 3.10
+#    进入 skill 目录直接用 python -m 运行
 
 # 3. 验证 CLI
-weekly-review --help
+cd skills/weekly-review
+python -m cli --help
 ```
 
 ## 使用
@@ -36,10 +37,10 @@ weekly-review --help
 
 ```bash
 # 默认生成上周报告
-weekly-review -o weekly-report.md
+python -m cli -o weekly-report.md
 
 # 指定周期并附加人工标注
-weekly-review --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.md
+python -m cli --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.md
 ```
 
 `notes.json` 示例：
@@ -88,7 +89,9 @@ weekly-review --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.m
 {
   "mcpServers": {
     "weekly-review": {
-      "command": "weekly-review-mcp"
+      "command": "python",
+      "args": ["-m", "mcp_server"],
+      "env": { "PYTHONPATH": "/path/to/skills/weekly-review" }
     }
   }
 }

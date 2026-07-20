@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from .utils import discover_db_path, fmt_hours, safe_div, ts_to_dt, truncate
+from utils import discover_db_path, fmt_hours, safe_div, ts_to_dt, truncate
 
 
 @dataclass
