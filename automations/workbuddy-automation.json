@@ -1,0 +1,8 @@
+{
+  "name": "每周自动生成周度复盘",
+  "scheduleType": "recurring",
+  "rrule": "FREQ=WEEKLY;BYDAY=MO;BYHOUR=9;BYMINUTE=0",
+  "cwds": "D:\\test\\workbuddy\\复盘",
+  "status": "PAUSED",
+  "prompt": "运行周度复盘 skill，生成本周复盘报告。\n\n步骤：\n1. 确定上周一和上周日的日期。\n2. 执行：weekly-review --start {上周一} --end {上周日} -o 周度复盘/YYYY-MM-DD周度复盘.md\n3. 读取生成的报告，用 AskUserQuestion 让用户确认跨周/跨夜会话处置。\n4. 把用户拍板结果写回报告。\n5. 调用 present_files 展示报告。\n\n注意：\n- 不要在本会话中写公众号文章。\n- 长会话处置必须先读标题/内容推断用途，不能只看时长。\n- 归因要区分思路/记忆/流程三类根因。"
+}

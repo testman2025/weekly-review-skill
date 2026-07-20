@@ -1,0 +1,43 @@
+{
+  "problems": [
+    {
+      "description": "约 1/3 指令仍为动词+无交付物（如\"寻找评估 skill 质量的工具\"）",
+      "category": "【用户】",
+      "root_cause": "提问习惯",
+      "suggestion": "反问训练机制已写入记忆，持续执行"
+    },
+    {
+      "description": "探索/生成类任务跨夜 idle",
+      "category": "【AI】",
+      "root_cause": "agent 缺收敛约束",
+      "suggestion": "可行性判定+试错上限(3次)+时间盒"
+    }
+  ],
+  "actions": {
+    "done": [
+      {
+        "action": "公众号文章去同质化重写",
+        "trigger": "用户反馈跟上周大差不差",
+        "change": "第2篇锚点改为多工作区≠重复投入"
+      }
+    ],
+    "observing": [
+      {
+        "action": "反问训练机制上线",
+        "criteria": "下周复盘时模糊指令占比是否明显下降"
+      },
+      {
+        "action": "公众号去同质化（新锚点机制）",
+        "criteria": "第3篇是否能提炼出第2篇没有的新洞察"
+      }
+    ],
+    "pending": [
+      {
+        "suggestion": "TubePilot 跨夜 idle 下周继续对齐",
+        "priority": "中",
+        "deadline": "2026-07-26",
+        "status": "待开始"
+      }
+    ]
+  }
+}
