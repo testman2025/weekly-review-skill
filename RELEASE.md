@@ -92,5 +92,8 @@ WorkBuddy / SkillHub 通常按 tag 拉取稳定版本。
 - [x] CLI 测试通过
 - [x] MCP server 测试通过
 - [x] 本地 git 仓库初始化并提交
-- [ ] GitHub 远程仓库创建与 push（需手动完成）
-- [ ] SkillHub / WorkBuddy 市场提交（需登录审核）
+- [x] GitHub 远程仓库创建与 push → https://github.com/testman2025/weekly-review-skill （公开仓库，已开源发布）
+- [ ] SkillHub / WorkBuddy 市场提交（需登录 skillhub.cn 网页，OAuth 审核，步骤见第 2 节）
+- [ ] cnb.cool 发布（需 CNB_TOKEN，当前环境无凭据，步骤见第 2.2 节）
+
+> GitHub 已是门槛最低的开源平台，仓库已公开可克隆、可 `npx skills add` 安装、可作为 MCP server 接入任意兼容客户端。
