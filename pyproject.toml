@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "weekly-review-skill"
 version = "0.1.0"
-description = "通用周度复盘 skill：固化复盘底座，不固化每周成品。支持 CLI / MCP / WorkBuddy SKILL。"
+description = "通用周度复盘 skill：固化复盘底座，不固化每周成品。支持 CLI / MCP / Agent SKILL。"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
     { name = "EDY" }
 ]
-keywords = ["workbuddy", "weekly-review", "mcp", "agent-skill", "productivity"]
+keywords = ["weekly-review", "weekly-retro", "mcp", "agent-skill", "productivity", "retrospective"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

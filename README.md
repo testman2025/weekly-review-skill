@@ -14,7 +14,7 @@
 
 1. **CLI**：直接生成 Markdown 复盘报告或原始 JSON。
 2. **MCP server**：通过 stdio JSON-RPC 暴露 `run_weekly_review` 工具，任何支持 MCP 的 agent 都能调用。
-3. **WorkBuddy SKILL**：在 WorkBuddy 中安装 `skills/weekly-review/SKILL.md` 后可直接对话触发。
+3. **Agent SKILL**：安装 `skills/weekly-review/SKILL.md` 到所用 agent 的 skills 目录后，可直接对话触发。
 
 ## 安装
 
@@ -96,11 +96,9 @@ weekly-review --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.m
 
 然后调用工具 `run_weekly_review`。
 
-### WorkBuddy
+### 作为 Agent Skill 安装
 
-复制 `skills/weekly-review/SKILL.md` 到 `~/.workbuddy/skills/weekly-review/SKILL.md`。
-
-或直接把本仓库作为 WorkBuddy skill 目录安装。
+复制 `skills/weekly-review/SKILL.md` 到所用 agent 的 skills 目录（例如 `~/.agents/skills/weekly-review/SKILL.md`，具体路径依所用 agent 而定）。
 
 ## 底座结构
 
@@ -115,9 +113,7 @@ weekly-review --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.m
 
 ## 数据源
 
-默认读取 `~/.workbuddy/workbuddy.db`（WorkBuddy 的 SQLite 数据库），包含 `sessions`、`session_usage`、`automations`、`automation_runs` 等表。
-
-可通过 `--db-path` 指定其他路径。
+默认读取本地 AI 会话库（SQLite），包含 `sessions`、`session_usage`、`automations`、`automation_runs` 等表。可用 `--db-path` 指定其他路径，或完全不依赖数据库、用 `--notes` 传入自定义 JSON。
 
 ## 许可证
 
