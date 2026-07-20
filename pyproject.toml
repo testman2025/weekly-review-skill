@@ -29,11 +29,10 @@ weekly-review = "weekly_review.cli:main"
 weekly-review-mcp = "weekly_review.mcp_server:serve"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/weekly_review"]
+packages = ["skills/weekly-review/weekly_review"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/src",
     "/skills",
     "/automations",
     "/README.md",

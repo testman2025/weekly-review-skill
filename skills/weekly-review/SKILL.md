@@ -1,7 +1,7 @@
 ---
 name: weekly-review
 description: "通用周度复盘 skill：读取本地 AI 会话库，基于会话时长、活跃度、自动化运行等客观数据，自动产出一页看板、分项目分析、根因三类归因（思路/记忆/流程）、动作台账、待对齐开放会话。固化复盘底座，不固化每周成品。"
-version: 1.0.0
+version: 1.0.1
 category: 办公效率
 read_when:
   - 用户说"做周度复盘 / 本周复盘 / 跑一下 weekly review"
@@ -36,30 +36,41 @@ read_when:
 
 ## 安装
 
-1. 确保本仓库已安装：
-   ```bash
-   cd weekly-review-skill
-   pip install -e .
-   ```
-2. 将本 `SKILL.md` 复制到所用 agent 的 skills 目录（目录名 `weekly-review`，放在 skills 根下）。
+本 skill **自包含**：运行代码（`weekly_review/` 包）已随本目录一起提供，仅依赖 Python 标准库，**无需 `pip install`、无需额外下载**。
+
+1. 将本 `weekly-review/` 目录（含 `SKILL.md` 与 `weekly_review/`）整体放入所用 agent 的 skills 目录，目录名保持 `weekly-review`。
+2. 确保运行环境有 Python ≥ 3.10。
 
 ## 使用方式
 
+设 skill 目录为 `{SKILL_DIR}`（即放置本 `SKILL.md` 的 `weekly-review/` 目录）。
+
 ### 方式一：CLI 直接生成报告
 
+在 skill 目录下执行：
+
 ```bash
-weekly-review --start {YYYY-MM-DD} --end {YYYY-MM-DD} -o 周度复盘.md
+cd {SKILL_DIR}
+python -m weekly_review.cli --start {YYYY-MM-DD} --end {YYYY-MM-DD} -o 周度复盘.md
+```
+
+或在任意目录通过 `PYTHONPATH` 指定：
+
+```bash
+PYTHONPATH={SKILL_DIR} python -m weekly_review.cli --start {YYYY-MM-DD} --end {YYYY-MM-DD} -o 周度复盘.md
 ```
 
 ### 方式二：MCP server
 
-在你的 agent 的 MCP 配置文件中添加：
+在你的 agent 的 MCP 配置文件中添加（`PYTHONPATH` 指向 skill 目录）：
 
 ```json
 {
   "mcpServers": {
     "weekly-review": {
-      "command": "weekly-review-mcp"
+      "command": "python",
+      "args": ["-m", "weekly_review.mcp_server"],
+      "env": { "PYTHONPATH": "{SKILL_DIR}" }
     }
   }
 }
@@ -72,10 +83,12 @@ weekly-review --start {YYYY-MM-DD} --end {YYYY-MM-DD} -o 周度复盘.md
 当用户说"做本周复盘"时，执行：
 
 ```bash
-weekly-review --start {本周一} --end {本周日} -o {项目复盘目录}/周度复盘/YYYY-MM-DD周度复盘.md
+PYTHONPATH={SKILL_DIR} python -m weekly_review.cli --start {本周一} --end {本周日} -o {项目复盘目录}/周度复盘/YYYY-MM-DD周度复盘.md
 ```
 
 并向用户展示关键数据，然后用 `AskUserQuestion` 让用户拍板跨周 / 跨夜会话处置。
+
+> 注：若你是从 GitHub 仓库 `testman2025/weekly-review-skill` 安装并希望走 `pip install -e .` 全局命令，请参见仓库 README；本 SKILL.md 以"随 skill 自带、开箱即用"为默认路径。
 
 ## 输出章节
 
