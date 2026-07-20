@@ -1,22 +1,39 @@
 ---
 name: weekly-review
-summary: "周度复盘 skill：读取 workbuddy.db，生成一页看板、项目分析、根因归因、动作台账、长会话对齐。"
+description: "通用 AI 协作周度复盘工具：基于会话时长、活跃度、自动化运行等客观数据，自动产出一页看板、分项目分析、根因三类归因（思路/记忆/流程）、动作台账、待对齐开放会话。默认对接 WorkBuddy 的 workbuddy.db，也支持传入自定义会话或笔记数据，复盘方法论与具体 AI 平台无关。"
+version: 1.0.0
+category: 办公效率
 read_when:
-  - 用户要求"周度复盘"
-  - 用户要求"weekly review"
-  - 每周日复盘
+  - 用户说"做周度复盘 / 本周复盘 / 跑一下 weekly review"
+  - 用户想清理或对齐跨周、跨夜还开着的会话
+  - 用户希望把复盘流程标准化、沉淀成可复用模板
+  - 每周固定时间（如周日）触发复盘
 ---
 
-# weekly-review-skill
+# weekly-review（周度复盘 skill）
 
-在 WorkBuddy 中使用通用周度复盘分析器。
+一个与 AI 平台无关的周度复盘方法论 + 分析引擎。它把"复盘该看什么、怎么归因、怎么落台账"固化成可复用的底座；每周具体项目、人工改进项由使用者或运行时输入。
+
+## 适用场景
+
+- **每周定期复盘**，想要客观数据（真实活跃时长、会话数、Credit 消耗、跨周/跨夜会话）支撑，而不是拍脑袋。
+- **会话 / 工作区越开越多**，需要清理或对齐跨周、跨夜仍处于 idle 的长会话。
+- **复盘流程标准化**：团队或个人想把"复盘该看什么、怎么归因"沉淀为可复用模板，减少每次从头设计。
+- **跨平台使用**：已用 WorkBuddy（直接读 workbuddy.db），或用了其他 agent（传入会话导出 JSON 也能跑框架）。
+
+## 不适用场景
+
+- **实时会话监控 / 告警**：本 skill 是离线周度分析，不常驻、不主动推送。
+- **非会话类数据复盘**：如代码审查质量、财务报表、用户行为分析——它只吃"会话 / 工作记录"数据。
+- **替你写公众号文章或周报正文**：本 skill 只产出结构化复盘底座，成品内容由你写。
+- **深度主观根因挖掘**：只提供"思路 / 记忆 / 流程"三类归因框架，最终结论要你拍板。
 
 ## 设计原则
 
 **固化底座，不固化成品。**
 
 - 固化：一页看板、项目分布、根因三类归因、动作台账、待对齐开放会话、自动化概览。
-- 不固化：每周具体项目名、人工标注问题与改进项。
+- 不固化：每周具体项目名、人工标注问题与改进项（由 `--notes` 传入或对话中补充）。
 
 ## 安装
 
@@ -25,7 +42,7 @@ read_when:
    cd weekly-review-skill
    pip install -e .
    ```
-2. 将本 `SKILL.md` 复制到 `~/.workbuddy/skills/weekly-review/SKILL.md`。
+2. 将本 `SKILL.md` 复制到 agent 的 skills 目录（WorkBuddy 示例：`~/.workbuddy/skills/weekly-review/SKILL.md`）。
 
 ## 使用方式
 
@@ -37,7 +54,7 @@ weekly-review --start {YYYY-MM-DD} --end {YYYY-MM-DD} -o 周度复盘.md
 
 ### 方式二：MCP server（推荐，任何 agent 可用）
 
-在 `~/.workbuddy/mcp.json` 中添加：
+在你的 agent 的 MCP 配置中添加（以 WorkBuddy 为例，写进 `~/.workbuddy/mcp.json`）：
 
 ```json
 {
@@ -49,7 +66,7 @@ weekly-review --start {YYYY-MM-DD} --end {YYYY-MM-DD} -o 周度复盘.md
 }
 ```
 
-然后在 WorkBuddy 连接器管理中信任该 MCP。
+然后在对应客户端的连接器 / MCP 管理中信任该 server 即可。
 
 ### 方式三：对话中调用
 
@@ -59,21 +76,27 @@ weekly-review --start {YYYY-MM-DD} --end {YYYY-MM-DD} -o 周度复盘.md
 weekly-review --start {本周一} --end {本周日} -o {项目复盘目录}/周度复盘/YYYY-MM-DD周度复盘.md
 ```
 
-并向用户展示关键数据，然后用 `AskUserQuestion` 让用户拍板跨周/跨夜会话处置。
+并向用户展示关键数据，然后用 `AskUserQuestion` 让用户拍板跨周 / 跨夜会话处置。
+
+## 数据源说明（为什么默认读 workbuddy.db，但 Cursor 等也能用）
+
+- **默认数据源**：`~/.workbuddy/workbuddy.db`（WorkBuddy 的会话库，含 `sessions` / `session_usage` 表）。这是开箱即用路径。
+- **非 WorkBuddy 用户**：用 `--db-path` 指向任意兼容的 SQLite 会话库；或完全不依赖数据库，用 `--notes` 传入自定义 JSON（字段见 `examples/notes-example.json`）跑同一套分析框架。
+- **方法论与平台无关**：一页看板、三类归因、动作台账这些"看什么、怎么归因"的逻辑不绑定任何 AI 平台或数据库，换数据源只是换输入。
 
 ## 输出章节
 
 1. 一页看板
 2. 分项目分析
-3. 问题清单 + 根因三类归因（思路/记忆/流程）
+3. 问题清单 + 根因三类归因（思路 / 记忆 / 流程）
 4. 本周动作台账（当场已改 / 待观察 / 待落实）
 5. 待对齐开放会话
 6. 自动化运行概览
 
 ## 注意事项
 
-- 统计周期默认上周一 00:00 ~ 上周日 23:59（UTC）。
-- 默认数据库路径 `~/.workbuddy/workbuddy.db`，可通过 `--db-path` 覆盖。
+- 统计周期默认上周一 00:00 ~ 上周日 23:59（UTC），可用 `--start` / `--end` 覆盖。
+- 默认数据库路径 `~/.workbuddy/workbuddy.db`，可通过 `--db-path` 覆盖；无数据库时用 `--notes` 传 JSON。
 - 跨周会话阈值 48h，跨夜 idle 阈值次日 06:00。
-- 长会话处置必须先读会话内容/标题推断用途，不能只看时长。
-- 归因禁止一刀切"收敛到单一工作区"，必须区分思路/记忆/流程三类根因。
+- 长会话处置必须先读会话内容 / 标题推断用途，不能只看时长。
+- 归因禁止一刀切"收敛到单一工作区"，必须区分思路 / 记忆 / 流程三类根因。
