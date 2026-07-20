@@ -18,7 +18,7 @@
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/EDY/weekly-review-skill.git
+git clone https://github.com/testman2025/weekly-review-skill.git
 cd weekly-review-skill
 
 # 2. 安装（推荐用 uv / pip）
@@ -104,7 +104,7 @@ weekly-review --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.m
 
 生成的报告固定包含以下章节：
 
-1. 一页看板（wall-clock、真实活跃时长、Token、会话数、跨周/跨夜会话）
+1. 一页看板（wall-clock、真实活跃时长、Credit 消耗、会话数、跨周/跨夜会话）
 2. 分项目分析（按 cwd 自动聚合）
 3. 问题清单 + 根因三类归因（思路/记忆/流程）
 4. 本周动作台账（当场已改 / 待观察 / 待落实）
