@@ -1,5 +1,7 @@
 # weekly-review-skill
 
+![weekly-review-skill 封面](assets/skill-cover.png)
+
 通用周度复盘 skill。
 
 **设计原则：固化底座，不固化成品。**

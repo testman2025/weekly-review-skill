@@ -34,4 +34,5 @@ ENV/
 *.sqlite
 .DS_Store
 test-report.md
+RELEASE.md
 
