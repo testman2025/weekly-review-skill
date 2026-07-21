@@ -20,13 +20,19 @@ TOOLS_SCHEMA = {
     "tools": [
         {
             "name": "run_weekly_review",
-            "description": "基于 workbuddy.db 生成指定周期的周度复盘报告。",
+            "description": (
+                "基于本地 AI 会话库（SQLite）生成周度复盘报告。"
+                "与具体 Agent 产品无关；任意支持 MCP 的 agent 均可调用。"
+            ),
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "workbuddy.db 绝对路径。不传则自动发现。",
+                        "description": (
+                            "本地会话库绝对路径（兼容含 sessions 表的 SQLite）。"
+                            "不传则读 WEEKLY_REVIEW_DB 或自动发现常见路径。"
+                        ),
                     },
                     "start_date": {
                         "type": "string",
@@ -79,6 +85,7 @@ def _run_review(params: dict[str, Any]) -> dict[str, Any]:
 
     with WeeklyReviewAnalyzer(params.get("db_path")) as analyzer:
         result = analyzer.query(start, end)
+        db_path = analyzer.db_path
 
     if fmt == "json":
         content = json.dumps(
@@ -87,6 +94,7 @@ def _run_review(params: dict[str, Any]) -> dict[str, Any]:
                     "start": result.period_start.isoformat(),
                     "end": result.period_end.isoformat(),
                 },
+                "db_path": str(db_path),
                 "sessions_count": len(result.sessions),
                 "real_active_hours": round(result.real_active_seconds / 3600, 2),
                 "total_credits": result.total_credits,
@@ -112,7 +120,7 @@ def _run_review(params: dict[str, Any]) -> dict[str, Any]:
             indent=2,
         )
     else:
-        content = ReportBuilder(result).build(notes)
+        content = ReportBuilder(result, db_path=db_path).build(notes)
 
     return {
         "content": [

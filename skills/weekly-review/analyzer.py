@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from utils import discover_db_path, fmt_hours, safe_div, ts_to_dt, truncate
+from utils import discover_db_path, safe_div, table_exists, ts_to_dt
 
 
 @dataclass
@@ -54,7 +54,12 @@ class ReviewResult:
 
 
 class WeeklyReviewAnalyzer:
-    """读取 workbuddy.db 并生成本周复盘数据."""
+    """读取本地 AI 会话库（SQLite）并生成本周复盘数据.
+
+    与具体 Agent 产品无关：任何能安装本 skill、并提供兼容 schema
+    （至少含 ``sessions`` 表）的环境均可使用。``session_usage`` /
+    ``automations`` / ``automation_runs`` 为可选增强表。
+    """
 
     def __init__(self, db_path: str | Path | None = None):
         self.db_path = discover_db_path(db_path)
@@ -148,8 +153,8 @@ class WeeklyReviewAnalyzer:
         return sessions
 
     def _attach_usage(self, sessions: list[SessionRecord]) -> None:
-        """附加 token/耗时信息."""
-        if not sessions:
+        """附加 token/耗时信息（表不存在时跳过，兼容精简会话库）."""
+        if not sessions or not table_exists(self.conn, "session_usage"):
             return
         ids = [s.id for s in sessions]
         placeholders = ",".join("?" * len(ids))
@@ -244,7 +249,9 @@ class WeeklyReviewAnalyzer:
         return sorted(counts.items(), key=lambda x: x[1], reverse=True)[:top_k]
 
     def _fetch_automations(self) -> list[dict[str, Any]]:
-        """拉取自动化任务定义."""
+        """拉取自动化任务定义（表不存在时返回空列表）."""
+        if not table_exists(self.conn, "automations"):
+            return []
         rows = self.conn.execute(
             """
             SELECT id, name, status, schedule_type, rrule, scheduled_at,
@@ -259,7 +266,9 @@ class WeeklyReviewAnalyzer:
     def _fetch_automation_runs(
         self, start_ts: int, end_ts: int
     ) -> list[dict[str, Any]]:
-        """拉取周期内的自动化运行记录."""
+        """拉取周期内的自动化运行记录（表不存在时返回空列表）."""
+        if not table_exists(self.conn, "automation_runs"):
+            return []
         rows = self.conn.execute(
             """
             SELECT thread_id, automation_id, status, result_success,

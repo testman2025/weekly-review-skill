@@ -1,89 +1,87 @@
-# weekly-review-skill
+# weekly-review-skill (Weekly Review Skill)
 
-![weekly-review-skill 封面](assets/skill-cover.png)
+![版本](https://img.shields.io/badge/version-1.1.2-blue)
+![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)
+![许可证](https://img.shields.io/badge/license-MIT-green)
 
-通用周度复盘 skill。
+一句话简介：与具体 Agent 无关的周度复盘 skill——固化复盘底座，不固化每周成品；支持 CLI / MCP / Agent SKILL，数据源为兼容的本地 SQLite（非 WorkBuddy 专用）。
 
-**设计原则：固化底座，不固化成品。**
+---
 
-- **固化（vendored 成模板）**：数据读取、一页看板、项目分布、根因三类归因、动作台账、长会话对齐、自动化概览。
-- **不固化（留给使用者）**：每周具体项目名、人工标注的问题与改进项。
-- **约束**：新写的每周复盘必须 import 同一套底座，风格锁死，内容随变。
+## 📖 目录 (Table of Contents)
 
-## 能力
+- [项目介绍](#-项目介绍)
+- [功能特性](#-功能特性)
+- [技术栈](#-技术栈)
+- [快速上手](#-快速上手)
+- [安装与配置](#-安装与配置)
+- [使用说明](#-使用说明)
+- [发布到 ClawHub](#-发布到-clawhub)
+- [许可证](#-许可证)
 
-1. **CLI**：直接生成 Markdown 复盘报告或原始 JSON。
-2. **MCP server**：通过 stdio JSON-RPC 暴露 `run_weekly_review` 工具，任何支持 MCP 的 agent 都能调用。
-3. **Agent SKILL**：安装 `skills/weekly-review/SKILL.md` 到所用 agent 的 skills 目录后，可直接对话触发。
+---
 
-## 安装
+## 📝 项目介绍 (Description)
+
+**为什么做这个项目？**
+> 周度复盘容易拍脑袋：缺客观会话数据、缺统一归因框架、每周重写格式。需要一套可复用的复盘底座。
+
+**它做了什么？**
+> 可安装到任意支持 Skill / MCP 的 Agent。只读**兼容 schema** 的本地 AI 会话库（SQLite，`--db-path` / `WEEKLY_REVIEW_DB` 指定；WorkBuddy 仅为自动发现候选之一），产出一页看板、分项目分析、根因三类归因、动作台账、待对齐开放会话与自动化概览。每周具体项目名与人工改进项由使用者通过 `--notes` 或对话补充。
+
+---
+
+## ✨ 功能特性 (Features)
+
+- ✅ CLI：生成 Markdown 复盘报告或原始 JSON
+- ✅ MCP server：stdio JSON-RPC 暴露 `run_weekly_review`
+- ✅ Agent SKILL：安装后可对话触发「周度复盘 / weekly-review」
+- ✅ 零第三方依赖，仅 Python 标准库；无网络请求、只读数据库
+- ✅ Agent 无关：OpenClaw / Cursor / Claude Code 等均可安装使用
+- ✅ 数据源无关：任意兼容 `sessions` 表的本地 SQLite（非 WorkBuddy 专用）
+- ✅ 可发布到 ClawHub（个人号），slug：`weekly-review`
+
+---
+
+## 🛠 技术栈 (Tech Stack)
+
+- **语言**: Python ≥ 3.10（标准库：`sqlite3` / `json` / `argparse` / `datetime` / `pathlib`）
+- **形态**: Agent Skill（`SKILL.md`）+ CLI + MCP
+- **分发**: GitHub 源码仓库 + ClawHub skill 注册表
+
+---
+
+## 🚀 快速上手 (Getting Started)
+
+### 前置依赖 (Prerequisites)
+
+- Python ≥ 3.10
+- （可选）本机 AI 会话库 SQLite（兼容 `sessions` 表；可用 `--db-path` 或 `WEEKLY_REVIEW_DB` 指定）
+
+### 从 ClawHub 安装
 
 ```bash
-# 1. 克隆仓库
+openclaw skills install weekly-review
+# 或
+clawhub install weekly-review
+```
+
+### 从源码安装
+
+```bash
 git clone https://github.com/testman2025/weekly-review-skill.git
 cd weekly-review-skill
-
-# 2. 无需安装：本 skill 零第三方依赖，仅需 Python ≥ 3.10
-#    进入 skill 目录直接用 python -m 运行
-
-# 3. 验证 CLI
 cd skills/weekly-review
 python -m cli --help
 ```
 
-## 使用
+---
 
-### CLI
+## 📦 安装与配置 (Installation)
 
-```bash
-# 默认生成上周报告
-python -m cli -o weekly-report.md
+本 skill **自包含**于 `skills/weekly-review/`：将整个目录放入 agent 的 skills 路径即可，**无需 `pip install`**。
 
-# 指定周期并附加人工标注
-python -m cli --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.md
-```
-
-`notes.json` 示例：
-
-```json
-{
-  "problems": [
-    {
-      "description": "1/3 指令仍是动词+无交付物",
-      "category": "【用户】",
-      "root_cause": "提问习惯",
-      "suggestion": "反问训练机制已写入记忆，持续执行"
-    }
-  ],
-  "actions": {
-    "done": [
-      {
-        "action": "公众号文章去同质化重写",
-        "trigger": "用户反馈",
-        "change": "第2篇锚点改为多工作区≠重复投入"
-      }
-    ],
-    "observing": [
-      {
-        "action": "反问训练机制上线",
-        "criteria": "下周复盘模糊指令占比是否明显下降"
-      }
-    ],
-    "pending": [
-      {
-        "suggestion": "TubePilot 跨夜 idle 下周继续对齐",
-        "priority": "中",
-        "deadline": "2026-07-26",
-        "status": "待开始"
-      }
-    ]
-  }
-}
-```
-
-### MCP server
-
-在支持 MCP 的 agent 中配置：
+MCP 配置示例：
 
 ```json
 {
@@ -97,15 +95,29 @@ python -m cli --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.m
 }
 ```
 
-然后调用工具 `run_weekly_review`。
+---
 
-### 作为 Agent Skill 安装
+## 📘 使用说明 (Usage)
 
-复制 `skills/weekly-review/SKILL.md` 到所用 agent 的 skills 目录（例如 `~/.agents/skills/weekly-review/SKILL.md`，具体路径依所用 agent 而定）。
+### CLI
 
-## 底座结构
+```bash
+cd skills/weekly-review
 
-生成的报告固定包含以下章节：
+# 默认生成上周报告
+python -m cli -o weekly-report.md
+
+# 指定周期并附加人工标注
+python -m cli --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.md
+```
+
+`notes.json` 示例见 `examples/notes-example.json`。
+
+### 作为 Agent Skill
+
+复制 `skills/weekly-review/` 到所用 agent 的 skills 目录（例如 `~/.agents/skills/weekly-review/`），对话触发「做本周复盘」即可。
+
+### 报告章节
 
 1. 一页看板（wall-clock、真实活跃时长、Credit 消耗、会话数、跨周/跨夜会话）
 2. 分项目分析（按 cwd 自动聚合）
@@ -114,10 +126,43 @@ python -m cli --start 2026-07-13 --end 2026-07-19 --notes notes.json -o report.m
 5. 待对齐开放会话（>48h 跨周、跨夜 idle）
 6. 自动化运行概览
 
-## 数据源
+---
 
-默认读取本地 AI 会话库（SQLite），包含 `sessions`、`session_usage`、`automations`、`automation_runs` 等表。可用 `--db-path` 指定其他路径，或完全不依赖数据库、用 `--notes` 传入自定义 JSON。
+## 🚢 发布到 ClawHub
 
-## 许可证
+发布单位是 **`skills/weekly-review/`**（含 `SKILL.md`），以**个人号**发布，不传 `--owner`。
 
-MIT
+```bash
+# 安装 CLI（任选其一）
+npm i -g clawhub
+
+# 登录个人 GitHub 账号
+clawhub login
+clawhub whoami
+
+# 预检
+clawhub skill publish ./skills/weekly-review \
+  --slug weekly-review \
+  --name "Weekly Review" \
+  --version 1.1.2 \
+  --changelog "Clarify agent-agnostic + any compatible session DB (not WorkBuddy-only)." \
+  --dry-run
+
+# 正式发布（确认 dry-run 无误后）
+clawhub skill publish ./skills/weekly-review \
+  --slug weekly-review \
+  --name "Weekly Review" \
+  --version 1.1.2 \
+  --changelog "Clarify agent-agnostic + any compatible session DB (not WorkBuddy-only)."
+```
+
+
+
+新版本可能需通过 ClawHub 安全扫描后才会出现在公开安装列表。
+
+---
+
+## 📄 许可证 (License)
+
+- 本仓库源码：MIT
+- 经 ClawHub 发布的 skill：按平台统一条款（MIT-0）分发

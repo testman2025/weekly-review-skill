@@ -36,7 +36,10 @@ def parse_date(s: str) -> datetime:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="周度复盘分析器")
-    parser.add_argument("--db-path", help="workbuddy.db 路径，默认自动发现")
+    parser.add_argument(
+        "--db-path",
+        help="本地 AI 会话库（SQLite）路径；也可用环境变量 WEEKLY_REVIEW_DB",
+    )
     parser.add_argument(
         "--start", help="开始日期（如 2026-07-13），默认上周一"
     )
@@ -64,6 +67,7 @@ def main(argv: list[str] | None = None) -> int:
 
     with WeeklyReviewAnalyzer(args.db_path) as analyzer:
         result = analyzer.query(start, end)
+        db_path = analyzer.db_path
 
     if args.json:
         # 简单序列化
@@ -72,9 +76,10 @@ def main(argv: list[str] | None = None) -> int:
                 "start": result.period_start.isoformat(),
                 "end": result.period_end.isoformat(),
             },
+            "db_path": str(db_path),
             "sessions_count": len(result.sessions),
             "real_active_hours": result.real_active_seconds / 3600,
-            "total_token": result.total_token,
+            "total_credits": result.total_credits,
             "projects": [
                 {"name": b.name, "sessions": len(b.sessions), "hours": b.total_seconds / 3600}
                 for b in result.project_buckets
@@ -86,7 +91,7 @@ def main(argv: list[str] | None = None) -> int:
         }
         text = json.dumps(data, ensure_ascii=False, indent=2)
     else:
-        text = ReportBuilder(result).build(notes)
+        text = ReportBuilder(result, db_path=db_path).build(notes)
 
     if args.output:
         Path(args.output).write_text(text, encoding="utf-8")

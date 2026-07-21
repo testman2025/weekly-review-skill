@@ -1,29 +1,45 @@
 # Weekly Review Skill
 
-A self-contained, platform-agnostic skill that turns your **local AI session history** (a SQLite database) into a structured weekly retrospective: a one-page dashboard, per-project breakdown, three-class root-cause attribution (approach / memory / process), an action ledger, and a list of open cross-week / overnight sessions to reconcile.
+An **agent-agnostic** skill that turns a **local AI session history** (compatible SQLite) into a structured weekly retrospective: one-page dashboard, per-project breakdown, three-class root-cause attribution (approach / memory / process), an action ledger, and open cross-week / overnight sessions to reconcile.
 
-It **vendors the retrospective "base"** (what to look at, how to attribute causes, how to log actions) and leaves weekly specifics (project names, manual notes) to the caller.
+It works with **any agent runtime** that can host Skills or MCP (OpenClaw, Cursor, Claude Code, etc.). It is **not WorkBuddy-only** — WorkBuddy’s DB path is merely one auto-discovery candidate.
+
+It **vendors the retrospective "base"** and leaves weekly specifics (project names, manual notes) to the caller.
 
 ## What it does
 
 - Reads a local AI session DB (SQLite) **read-only**.
-- Produces: one-page dashboard (wall-clock, real active time, credit usage, session count, long/overnight sessions), per-project analysis, problem list with root-cause triage, action ledger (done / observing / pending), open sessions to align, automation run overview.
+- Produces: one-page dashboard, per-project analysis, problem list with root-cause triage, action ledger, open sessions to align, automation run overview (if tables exist).
 - Exposes three forms: **CLI**, **MCP server** (stdio JSON-RPC), and **Agent SKILL**.
 
 ## Safety notes (for moderators / reviewers)
 
-- **No third-party dependencies.** Uses only the Python standard library (`sqlite3`, `json`, `argparse`, `datetime`, `pathlib`, `typing`). There is no `pip install` step and nothing is downloaded at runtime.
-- **No network calls.** The skill only opens a local SQLite file you point it at (default `~/.workbuddy/workbuddy.db`), reads it, and prints a Markdown/JSON report to stdout or a local file.
-- **Read-only.** It never writes to or mutates the source database.
-- **No hidden execution.** The only "code" that runs is the bundled Python scripts, executed locally on your own machine, on data you explicitly provide.
+- **No third-party dependencies.** Python standard library only.
+- **No network calls.** Opens a local SQLite file you point at, then prints Markdown/JSON.
+- **Read-only.** Never mutates the source database.
+- **No secrets / env credentials** required (optional `WEEKLY_REVIEW_DB` is only a path).
+- **Agent-agnostic.** Not locked to WorkBuddy or any single vendor.
 
 ## Install
 
 ```bash
+openclaw skills install weekly-review
+# or
 clawhub install weekly-review
 ```
 
-Then point your agent at the installed skill directory.
+Requires Python ≥ 3.10. Point any agent at the installed skill directory.
+
+## Data source (not product-specific)
+
+| Priority | How |
+|----------|-----|
+| 1 | `--db-path /path/to/sessions.db` |
+| 2 | Env `WEEKLY_REVIEW_DB` (or `AI_SESSION_DB`) |
+| 3 | Auto-discover common paths (WorkBuddy / OpenClaw / Cursor / `sessions.db`, etc.) |
+
+**Required table:** `sessions` (see `SKILL.md` 「数据源约定」).  
+**Optional:** `session_usage`, `automations`, `automation_runs` — skipped if missing.
 
 ## Usage
 
@@ -31,10 +47,10 @@ Then point your agent at the installed skill directory.
 
 ```bash
 cd <skill-dir>
-python -m cli --start 2026-07-13 --end 2026-07-19 -o weekly-report.md
+python -m cli --db-path /path/to/your-sessions.db --start 2026-07-13 --end 2026-07-19 -o weekly-report.md
 ```
 
-Options: `--db-path`, `--start`, `--end`, `--output / -o`, `--notes` (JSON of manual problems/actions), `--json`.
+Options: `--db-path`, `--start`, `--end`, `--output / -o`, `--notes`, `--json`.
 
 ### MCP server
 
@@ -44,34 +60,22 @@ Options: `--db-path`, `--start`, `--end`, `--output / -o`, `--notes` (JSON of ma
     "weekly-review": {
       "command": "python",
       "args": ["-m", "mcp_server"],
-      "env": { "PYTHONPATH": "<skill-dir>" }
+      "env": {
+        "PYTHONPATH": "<skill-dir>",
+        "WEEKLY_REVIEW_DB": "/path/to/your-sessions.db"
+      }
     }
   }
 }
 ```
 
-Tool: `run_weekly_review` (params: `db_path`, `start_date`, `end_date`, `output_format`, `notes`).
+Tool: `run_weekly_review`.
 
 ### As an Agent Skill
 
-Copy this directory's `SKILL.md` into your agent's skills folder (e.g. `~/.agents/skills/weekly-review/SKILL.md`).
-
-## Output sections
-
-1. One-page dashboard
-2. Per-project analysis (auto-aggregated by working-directory leaf)
-3. Problem list + three-class root-cause attribution (approach / memory / process)
-4. Action ledger (done / observing / pending)
-5. Open sessions to reconcile (>48h cross-week, overnight idle)
-6. Automation run overview
-
-## Notes
-
-- Default period: last Monday 00:00 ~ last Sunday 23:59 (UTC), overridable via `--start` / `--end`.
-- Cross-week threshold: 48h. Overnight idle threshold: last active after 06:00 next day.
-- Long sessions must be reconciled by reading their content/title, not by duration alone.
-- Root-cause attribution must distinguish approach / memory / process — never a one-size "collapse everything into one workspace" verdict.
+Copy this directory into your agent’s skills folder (any agent that reads `SKILL.md`).
 
 ## License
 
-MIT
+- Source in this repository: MIT (see repo root).
+- Skills published on ClawHub are distributed under the registry's MIT-0 terms.

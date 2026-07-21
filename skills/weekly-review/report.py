@@ -22,8 +22,9 @@ from utils import fmt_hours, safe_div, truncate
 
 
 class ReportBuilder:
-    def __init__(self, result: ReviewResult):
+    def __init__(self, result: ReviewResult, db_path: str | Path | None = None):
         self.r = result
+        self.db_path = Path(db_path) if db_path else None
 
     def build(self, user_notes: dict[str, Any] | None = None) -> str:
         """生成完整 Markdown 报告."""
@@ -35,7 +36,7 @@ class ReportBuilder:
         lines.append(f"# {start_str} ~ {end_str} 周度复盘\n")
         lines.append(
             f"> **统计周期**：{start_str}（周一）～ {end_str}（周日）\n"
-            f"> **数据来源**：`{self._db_path_hint()}`\n\n"
+            f"> **数据来源**：`{self._db_path_hint()}`（本地 AI 会话库，Agent 无关）\n\n"
         )
 
         lines.extend(self._section_dashboard())
@@ -48,7 +49,9 @@ class ReportBuilder:
         return "\n".join(lines)
 
     def _db_path_hint(self) -> str:
-        return "workbuddy.db"
+        if self.db_path:
+            return str(self.db_path)
+        return "local-session.db"
 
     def _section_dashboard(self) -> list[str]:
         r = self.r
