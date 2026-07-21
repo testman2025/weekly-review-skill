@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from utils import truncate
@@ -123,8 +124,24 @@ class ReportBuilder:
 
         charts = d.get("charts") or []
         if charts:
-            joined = "、".join(f"`{c}`" for c in charts)
-            out.append(f"辅助图表：{joined}。")
+            out.append("### 辅助图表\n")
+            for c in charts:
+                path = str(c)
+                # 支持 {path, title} 或纯字符串路径
+                if isinstance(c, dict):
+                    path = str(c.get("path") or c.get("file") or "")
+                    title = str(c.get("title") or Path(path).stem)
+                else:
+                    title = Path(path).stem
+                if not path:
+                    continue
+                out.append(f"![{title}]({path})")
+                out.append("")
+            # 同时保留路径清单，方便核对文件
+            joined = "、".join(
+                f"`{c if isinstance(c, str) else c.get('path')}`" for c in charts
+            )
+            out.append(f"文件：{joined}。")
             out.append("")
         return out
 

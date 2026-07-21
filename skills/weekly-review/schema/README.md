@@ -4,7 +4,18 @@
 
 Agent 采集事实后填本结构；skill 只渲染结构。**图表**用 `dashboard.charts` 引用已生成的 PNG 路径（辅助图表），不以 Mermaid 为主。
 
-## 主要字段
+## 图表
+
+渲染时默认在报告同目录生成两张 **SVG**（标准库、无 pip）：
+
+- `chart-时间分布-YYYY-MM-DD.svg`
+- `chart-归因Token-YYYY-MM-DD.svg`
+
+报告看板用 Markdown 图片语法嵌入：`![title](path)`。  
+也可用 `--charts-dir` 指定目录，或 `--no-charts` 关闭。
+
+Agent 若已用 ImageGen/其他工具产出 PNG，可直接填 `dashboard.charts` 路径，CLI 不会覆盖已有 charts（除非重新生成）。
+
 
 | 字段 | 说明 |
 |------|------|

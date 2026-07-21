@@ -1,4 +1,4 @@
-"""命令行入口：将 Agent 整理的 review-input JSON 渲染为 Markdown."""
+"""命令行入口：将 Agent 整理的 review-input JSON 渲染为 Markdown，并可选生成辅助图表."""
 
 from __future__ import annotations
 
@@ -7,12 +7,13 @@ import json
 import sys
 from pathlib import Path
 
+from charts import write_charts
 from report import ReportBuilder
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="周度复盘渲染器：输入 Agent 采集的 review-input JSON，输出 Markdown"
+        description="周度复盘渲染器：review-input JSON → Markdown（可生成辅助图表 SVG）"
     )
     parser.add_argument(
         "--input",
@@ -21,6 +22,15 @@ def main(argv: list[str] | None = None) -> int:
         help="review-input JSON 路径（见 schema/review-input.example.json）",
     )
     parser.add_argument("--output", "-o", help="输出 markdown 文件路径")
+    parser.add_argument(
+        "--charts-dir",
+        help="辅助图表输出目录；不传且指定了 -o 时，默认写到报告同目录",
+    )
+    parser.add_argument(
+        "--no-charts",
+        action="store_true",
+        help="不生成/不嵌入辅助图表",
+    )
     parser.add_argument(
         "--json",
         action="store_true",
@@ -41,13 +51,62 @@ def main(argv: list[str] | None = None) -> int:
         print("缺少 period.start", file=sys.stderr)
         return 1
 
+    # 生成并嵌入辅助图表（定稿：时间分布 + 归因/用量）
+    # 若目标目录已有同名 PNG（人工/ImageGen 产出），优先嵌入 PNG，不覆盖。
+    if not args.no_charts and not args.json:
+        charts_dir: Path | None = None
+        if args.charts_dir:
+            charts_dir = Path(args.charts_dir).expanduser()
+        elif args.output:
+            charts_dir = Path(args.output).expanduser().resolve().parent
+        if charts_dir is not None:
+            end = (data.get("period") or {}).get("end") or "week"
+            preferred = [
+                f"chart-时间分布-{end}.png",
+                f"chart-归因Token-{end}.png",
+            ]
+            existing = [n for n in preferred if (charts_dir / n).exists()]
+            if len(existing) == 2:
+                names = existing
+            else:
+                names = write_charts(data, charts_dir)
+                # 半套 PNG 时：有 PNG 用 PNG，其余用新生成的 SVG
+                merged: list[str] = []
+                svg_by_key = {("时间分布" if "时间分布" in n else "归因"): n for n in names}
+                for key, png_name in (
+                    ("时间分布", preferred[0]),
+                    ("归因", preferred[1]),
+                ):
+                    if (charts_dir / png_name).exists():
+                        merged.append(png_name)
+                    else:
+                        merged.append(svg_by_key[key])
+                names = merged
+
+            dash = data.setdefault("dashboard", {})
+            if args.output:
+                out_parent = Path(args.output).expanduser().resolve().parent
+                rels = []
+                for n in names:
+                    full = (charts_dir / n).resolve()
+                    try:
+                        rels.append(str(full.relative_to(out_parent)).replace("\\", "/"))
+                    except ValueError:
+                        rels.append(str(full).replace("\\", "/"))
+                dash["charts"] = rels
+            else:
+                dash["charts"] = names
+
+
     if args.json:
         text = json.dumps(data, ensure_ascii=False, indent=2)
     else:
         text = ReportBuilder(data).build()
 
     if args.output:
-        Path(args.output).write_text(text, encoding="utf-8")
+        out_path = Path(args.output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(text, encoding="utf-8")
         try:
             print(f"报告已保存：{args.output}")
         except UnicodeEncodeError:

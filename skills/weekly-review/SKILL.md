@@ -6,7 +6,7 @@ description: >
   root-cause triage, action ledger, open sessions, automations, optional
   fact-corrections). Host Agent collects facts; this skill defines structure
   and can render Markdown. Use for weekly-review / 周度复盘 / 本周复盘.
-version: 1.2.2
+version: 1.2.3
 category: 办公效率
 read_when:
   - 用户说"做周度复盘 / 本周复盘 / 跑一下 weekly review"
@@ -45,7 +45,7 @@ metadata:
 6. **自动化概览**  
 7. **事实更正**（可选，有核对推翻时必写）
 
-**图表约定**：主视觉是看板表；图为 Agent 另行生成的 PNG，在看板用 `辅助图表：\`path\`` 引用。不要用 Mermaid 柱状图顶替定稿版式。
+**图表约定**：渲染器默认生成并嵌入两张辅助图（时间分布柱状图、归因/用量饼图，SVG）。也可由 Agent 提供 PNG 路径写入 `dashboard.charts`。看板主表仍是 `| 指标 | 数值 | 口径说明 |`。
 
 ## 输入
 
@@ -64,6 +64,7 @@ metadata:
 ```bash
 cd {SKILL_DIR}
 python -m cli --input schema/review-input.example.json -o 周度复盘.md
+# 图表默认写到报告同目录；关闭：加 --no-charts
 ```
 
 ### MCP
