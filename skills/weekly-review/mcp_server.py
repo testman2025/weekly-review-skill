@@ -1,18 +1,15 @@
-"""轻量 MCP server，任何支持 MCP 的 agent 都能调用.
+"""轻量 MCP server：接收 Agent 整理的 review_input，返回 Markdown 报告.
 
-不依赖 `mcp` 官方包，使用 stdio JSON-RPC 2.0 实现。
-暴露工具：
-- `run_weekly_review`: 运行周度复盘并返回 markdown 报告或原始指标 JSON。
+不依赖 `mcp` 官方包，使用 stdio JSON-RPC 2.0。
+读会话存储由调用方 Agent 完成；本工具只做结构校验与渲染。
 """
 
 from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from analyzer import WeeklyReviewAnalyzer
 from report import ReportBuilder
 
 
@@ -21,35 +18,25 @@ TOOLS_SCHEMA = {
         {
             "name": "run_weekly_review",
             "description": (
-                "基于本地 AI 会话库（SQLite）生成周度复盘报告。"
-                "与具体 Agent 产品无关；任意支持 MCP 的 agent 均可调用。"
+                "将 Agent 已采集的周度复盘事实（review_input）渲染为 Markdown 报告。"
+                "不读取任何本地会话数据库；采集由调用方 Agent 负责。"
             ),
             "inputSchema": {
                 "type": "object",
+                "required": ["review_input"],
                 "properties": {
-                    "db_path": {
-                        "type": "string",
+                    "review_input": {
+                        "type": "object",
                         "description": (
-                            "本地会话库绝对路径（兼容含 sessions 表的 SQLite）。"
-                            "不传则读 WEEKLY_REVIEW_DB 或自动发现常见路径。"
+                            "标准复盘事实包：period / dashboard / projects / "
+                            "problems / actions / open_sessions / automations。"
+                            "见 skill 内 schema/review-input.example.json。"
                         ),
-                    },
-                    "start_date": {
-                        "type": "string",
-                        "description": "开始日期，如 2026-07-13。不传默认上周一。",
-                    },
-                    "end_date": {
-                        "type": "string",
-                        "description": "结束日期，如 2026-07-19。不传默认上周日。",
                     },
                     "output_format": {
                         "type": "string",
                         "enum": ["markdown", "json"],
                         "description": "输出格式，默认 markdown。",
-                    },
-                    "notes": {
-                        "type": "object",
-                        "description": "人工标注：problems/actions 等，会写入报告对应章节。",
                     },
                 },
             },
@@ -58,78 +45,20 @@ TOOLS_SCHEMA = {
 }
 
 
-def _default_week_range() -> tuple[datetime, datetime]:
-    today = datetime.now(timezone.utc).date()
-    monday = today - timedelta(days=today.weekday() + 7)
-    sunday = monday + timedelta(days=6)
-    start = datetime(monday.year, monday.month, monday.day, tzinfo=timezone.utc)
-    end = datetime(
-        sunday.year, sunday.month, sunday.day, 23, 59, 59, tzinfo=timezone.utc
-    )
-    return start, end
-
-
-def _parse_date(s: str) -> datetime:
-    return datetime.strptime(s, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-
-
 def _run_review(params: dict[str, Any]) -> dict[str, Any]:
-    start, end = _default_week_range()
-    if params.get("start_date"):
-        start = _parse_date(params["start_date"])
-    if params.get("end_date"):
-        end = _parse_date(params["end_date"])
+    data = params.get("review_input")
+    if not isinstance(data, dict):
+        raise ValueError("缺少 review_input 对象")
+    if not (data.get("period") or {}).get("start"):
+        raise ValueError("review_input.period.start 必填")
 
-    notes = params.get("notes") or {}
     fmt = params.get("output_format", "markdown")
-
-    with WeeklyReviewAnalyzer(params.get("db_path")) as analyzer:
-        result = analyzer.query(start, end)
-        db_path = analyzer.db_path
-
     if fmt == "json":
-        content = json.dumps(
-            {
-                "period": {
-                    "start": result.period_start.isoformat(),
-                    "end": result.period_end.isoformat(),
-                },
-                "db_path": str(db_path),
-                "sessions_count": len(result.sessions),
-                "real_active_hours": round(result.real_active_seconds / 3600, 2),
-                "total_credits": result.total_credits,
-                "projects": [
-                    {
-                        "name": b.name,
-                        "sessions": len(b.sessions),
-                        "hours": round(b.total_seconds / 3600, 2),
-                        "credits": round(b.credits, 2),
-                    }
-                    for b in result.project_buckets
-                ],
-                "long_sessions": [
-                    {"id": s.id, "title": s.title, "cwd": s.cwd}
-                    for s in result.long_sessions
-                ],
-                "overnight_sessions": [
-                    {"id": s.id, "title": s.title, "cwd": s.cwd}
-                    for s in result.overnight_sessions
-                ],
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
+        content = json.dumps(data, ensure_ascii=False, indent=2)
     else:
-        content = ReportBuilder(result, db_path=db_path).build(notes)
+        content = ReportBuilder(data).build()
 
-    return {
-        "content": [
-            {
-                "type": "text",
-                "text": content,
-            }
-        ]
-    }
+    return {"content": [{"type": "text", "text": content}]}
 
 
 def _send_response(id_: Any, result: Any) -> None:
@@ -156,7 +85,7 @@ def _handle_request(req: dict[str, Any]) -> None:
                 "protocolVersion": "2024-11-05",
                 "serverInfo": {
                     "name": "weekly-review-skill-mcp",
-                    "version": "0.1.0",
+                    "version": "1.2.0",
                 },
                 "capabilities": {"tools": {}},
             },
@@ -181,7 +110,6 @@ def _handle_request(req: dict[str, Any]) -> None:
 
 
 def serve() -> None:
-    """启动 stdio MCP server."""
     for line in sys.stdin:
         line = line.strip()
         if not line:

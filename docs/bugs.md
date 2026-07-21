@@ -4,26 +4,21 @@
 
 ### 现象
 
-ClawHub / SkillSpector 综合评述写到：「只支持特定的 workbuddy 数据库」「对于使用 workbuddy 的用户……」，与产品定位不符。
+评述写「只支持特定的 workbuddy 数据库」。
 
 ### 根因
 
-介绍与代码文案过度绑定 `workbuddy.db`（CLI help、MCP tool description、报告数据来源、默认路径探测命名），导致评审模型把「默认发现路径之一」理解成「唯一支持的产品」。
+文案与默认路径过度绑定产品名；且 skill 自己读 SQLite，会被理解成绑死某存储。
 
-实际上：
+### 修复（v1.1.2 → v1.2.0）
 
-- **运行时**：任意可安装 Skill / MCP 的 Agent 都可用；
-- **数据源**：任意含兼容 `sessions` 表的本地 SQLite；WorkBuddy 只是自动发现候选之一。
+- **v1.1.2**：淡化 WorkBuddy 文案、扩大路径发现（仍不够）。
+- **v1.2.0（定位修正）**：公开主路径改为 **Agent 采集 + review-input JSON**；SQLite 分析器移入 `legacy/`；文档明确「读存储是宿主 Agent 的事」。
 
-### 修复（v1.1.2）
+---
 
-- 重写 `SKILL.md` / README 描述：明确 agent-agnostic、非 WorkBuddy 专用。
-- CLI / MCP / 报告文案改为「本地 AI 会话库」。
-- `discover_db_path` 支持 `WEEKLY_REVIEW_DB`，并探测多种常见路径。
-- `session_usage` / `automations` / `automation_runs` 表缺失时跳过，不强制整库 schema。
-- 报告中展示真实 `db_path`。
+## 2026-07-21：跨平台应靠 Agent 读存储，而非 skill 适配各库
 
-### 验证
+### 决策
 
-- 本地用任意路径 `--db-path` 指向兼容库可生成报告。
-- 重新发布 ClawHub `weekly-review@1.1.2` 后，评述应不再写死 WorkBuddy-only。
+不为各平台写 DB/JSONL 适配器。Skill 只提供结构与渲染；采集由 Cursor / Claude / OpenClaw 等宿主完成。

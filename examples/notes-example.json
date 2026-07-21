@@ -1,43 +1,55 @@
 {
+  "period": {
+    "start": "2026-07-13",
+    "end": "2026-07-19"
+  },
+  "source": {
+    "label": "agent-collected",
+    "note": "示例：由 Agent 采集后填入"
+  },
+  "dashboard": {
+    "wall_clock_hours": 40,
+    "active_hours": 16,
+    "credits": 10,
+    "session_count": 20,
+    "long_session_count": 1,
+    "overnight_idle_count": 1,
+    "top_models": [{ "name": "composer", "count": 12 }]
+  },
+  "projects": [
+    { "name": "demo-project", "sessions": 5, "hours": 4.0, "credits": 2.0, "notes": "" }
+  ],
   "problems": [
     {
-      "description": "约 1/3 指令仍为动词+无交付物（如\"寻找评估 skill 质量的工具\"）",
+      "description": "约 1/3 指令仍为动词+无交付物",
       "category": "【用户】",
       "root_cause": "提问习惯",
       "suggestion": "反问训练机制已写入记忆，持续执行"
-    },
-    {
-      "description": "探索/生成类任务跨夜 idle",
-      "category": "【AI】",
-      "root_cause": "agent 缺收敛约束",
-      "suggestion": "可行性判定+试错上限(3次)+时间盒"
     }
   ],
   "actions": {
     "done": [
       {
         "action": "长会话处置改为先读内容再判断",
-        "trigger": "误判 S1 为挂机该关，经纠正后修正",
-        "change": "只看时长会错杀合理分工，改为先读标题/内容"
+        "trigger": "误判后纠正",
+        "change": "只看时长会错杀合理分工"
       }
     ],
     "observing": [
       {
         "action": "反问训练机制上线",
-        "criteria": "下周复盘时模糊指令占比是否明显下降"
-      },
-      {
-        "action": "跨周长会话主动对齐机制",
-        "criteria": "下周复盘时是否主动列出>48h未关闭会话让用户拍板"
+        "criteria": "下周模糊指令占比是否下降"
       }
     ],
     "pending": [
       {
-        "suggestion": "TubePilot 跨夜 idle 下周继续对齐",
+        "suggestion": "跨夜 idle 会话下周继续对齐",
         "priority": "中",
         "deadline": "2026-07-26",
         "status": "待开始"
       }
     ]
-  }
+  },
+  "open_sessions": [],
+  "automations": { "runs_total": 0, "runs_success": 0, "items": [] }
 }
