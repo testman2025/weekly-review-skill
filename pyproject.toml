@@ -1,6 +1,6 @@
 [project]
 name = "weekly-review-skill"
-version = "1.2.0"
+version = "1.2.1"
 description = "Agent-fed weekly review：宿主 Agent 采集事实，Skill 固化复盘结构与 Markdown 渲染。"
 readme = "README.md"
 license = { text = "MIT" }

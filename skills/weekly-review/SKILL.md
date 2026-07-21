@@ -6,7 +6,7 @@ description: >
   per-project, root-cause triage, action ledger, open sessions) and can render
   Markdown from a standard review-input JSON. Use for weekly-review /
   周度复盘 / 本周复盘 / 一周总结.
-version: 1.2.0
+version: 1.2.1
 category: 办公效率
 read_when:
   - 用户说"做周度复盘 / 本周复盘 / 跑一下 weekly review"

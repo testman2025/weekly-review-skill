@@ -1,6 +1,6 @@
 # weekly-review-skill (Weekly Review Skill)
 
-![版本](https://img.shields.io/badge/version-1.2.0-blue)
+![版本](https://img.shields.io/badge/version-1.2.1-blue)
 ![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 
@@ -67,7 +67,7 @@ clawhub login
 clawhub skill publish ./skills/weekly-review \
   --slug weekly-review \
   --name "Weekly Review" \
-  --version 1.2.0 \
+  --version 1.2.1 \
   --changelog "Agent-fed review: host Agent collects facts; skill renders structure."
 ```
 
