@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="368" viewBox="0 0 900 368">
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="450.0" y="36" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A">本周时间投入分布 (真实活跃 ≈ 14h)</text>
+<line x1="160.0" y1="64" x2="160.0" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="160.0" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">0</text>
+<line x1="228.9" y1="64" x2="228.9" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="228.9" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">1</text>
+<line x1="297.8" y1="64" x2="297.8" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="297.8" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">1</text>
+<line x1="366.7" y1="64" x2="366.7" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="366.7" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">2</text>
+<line x1="435.6" y1="64" x2="435.6" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="435.6" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">3</text>
+<line x1="504.4" y1="64" x2="504.4" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="504.4" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">3</text>
+<line x1="573.3" y1="64" x2="573.3" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="573.3" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">4</text>
+<line x1="642.2" y1="64" x2="642.2" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="642.2" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">4</text>
+<line x1="711.1" y1="64" x2="711.1" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="711.1" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">5</text>
+<line x1="780.0" y1="64" x2="780.0" y2="304" stroke="#E8E8E8" stroke-width="1"/>
+<text x="780.0" y="322" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="11" fill="#888">6</text>
+<line x1="160" y1="64" x2="160" y2="304" stroke="#666" stroke-width="1.2"/>
+<line x1="160" y1="304" x2="780" y2="304" stroke="#666" stroke-width="1.2"/>
+<text x="470.0" y="354" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="12" fill="#555">真实活跃时长 (小时，已剔除挂机 idle)</text>
+<text x="150" y="92" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" fill="#222">定稿模板与图表</text>
+<rect x="160" y="74" width="539.1" height="22" fill="#E89A3C" rx="2"/>
+<text x="707.1" y="91" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#222">5.0h · 31%</text>
+<text x="150" y="140" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" fill="#222">ClawHub/SkillHub 上架</text>
+<rect x="160" y="122" width="539.1" height="22" fill="#2A9D8F" rx="2"/>
+<text x="707.1" y="139" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#222">5.0h · 31%</text>
+<text x="150" y="188" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" fill="#222">跨平台定位改造</text>
+<rect x="160" y="170" width="431.3" height="22" fill="#1D3557" rx="2"/>
+<text x="599.3" y="187" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#222">4.0h · 25%</text>
+<text x="150" y="236" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" fill="#222">文档与发布说明</text>
+<rect x="160" y="218" width="161.7" height="22" fill="#A8B5C4" rx="2"/>
+<text x="329.7" y="235" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#222">1.5h · 9%</text>
+<text x="150" y="284" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" fill="#222">其他零散</text>
+<rect x="160" y="266" width="53.9" height="22" fill="#C5CAD1" rx="2"/>
+<text x="221.9" y="283" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#222">0.5h · 3%</text>
+</svg>
