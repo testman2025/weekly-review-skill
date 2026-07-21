@@ -85,7 +85,7 @@ def _handle_request(req: dict[str, Any]) -> None:
                 "protocolVersion": "2024-11-05",
                 "serverInfo": {
                     "name": "weekly-review-skill-mcp",
-                    "version": "1.2.1",
+                    "version": "1.2.2",
                 },
                 "capabilities": {"tools": {}},
             },

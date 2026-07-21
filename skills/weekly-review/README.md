@@ -1,45 +1,23 @@
 # Weekly Review Skill
 
-**Agent collects facts; this skill defines the retrospective structure** (and optionally renders Markdown).
+Host Agent collects facts; this skill locks the **six-chapter Markdown template** used in production retrospectives.
 
-Install on any Agent that supports Skills / MCP. The host Agent reads its own platform’s session history; this skill does **not** ship per-vendor DB adapters.
+## Output shape (locked)
 
-## What it does
+1. Dashboard table (`指标 | 数值 | 口径说明`) + one-liner + optional PNG chart paths  
+2. Theme project sections with dimension tables (incl. disk verification)  
+3. Problems + three-class root cause + positives  
+4. Action ledger  
+5. Open sessions  
+6. Automations overview  
+7. Fact corrections (optional)
 
-- Defines a fixed weekly review: dashboard, per-project, root-cause triage (approach / memory / process), action ledger, open sessions, automations.
-- Accepts a standard `review-input` JSON (see `schema/`).
-- Optional CLI / MCP renderer (Python stdlib only).
+Charts = PNG paths under 辅助图表 — not Mermaid as the primary layout.
 
-## Safety
-
-- No network calls in the renderer.
-- No reading of local session databases by default.
-- No secrets required.
-
-## Install
+## Install / render
 
 ```bash
-openclaw skills install weekly-review
-# or
-clawhub install weekly-review
-```
-
-## Usage
-
-1. Agent gathers this week’s session facts from **its own platform**.
-2. Fill `review-input` (see `schema/review-input.example.json`).
-3. Output the six sections in chat, or render:
-
-```bash
-cd <skill-dir>
 python -m cli --input schema/review-input.example.json -o weekly-report.md
 ```
 
-### MCP
-
-Tool `run_weekly_review` requires `review_input` object (not `db_path`).
-
-## License
-
-- Repo source: MIT.
-- ClawHub distribution: MIT-0.
+See `SKILL.md` and `schema/`.

@@ -1,12 +1,12 @@
 ---
 name: weekly-review
 description: >
-  Agent-fed weekly retrospective: the host Agent collects session facts from
-  its own platform; this skill defines the review structure (dashboard,
-  per-project, root-cause triage, action ledger, open sessions) and can render
-  Markdown from a standard review-input JSON. Use for weekly-review /
-  周度复盘 / 本周复盘 / 一周总结.
-version: 1.2.1
+  Agent-fed weekly retrospective locked to the six-chapter template
+  (dashboard table + one-liner + optional PNG charts, theme projects,
+  root-cause triage, action ledger, open sessions, automations, optional
+  fact-corrections). Host Agent collects facts; this skill defines structure
+  and can render Markdown. Use for weekly-review / 周度复盘 / 本周复盘.
+version: 1.2.2
 category: 办公效率
 read_when:
   - 用户说"做周度复盘 / 本周复盘 / 跑一下 weekly review"
@@ -28,82 +28,44 @@ metadata:
 
 # weekly-review（周度复盘 skill）
 
-跨平台周度复盘底座：**各平台 Agent 负责读本机会话/用量并整理事实**；本 skill 负责「复盘看什么、怎么归因、怎么落台账」，以及可选的 Markdown 渲染。
+**固化底座，不固化成品。** 宿主 Agent 采集本平台事实；输出必须贴合定稿六章模板（参考用户已定稿的周度复盘 Markdown）。
 
-## 适用场景
+## 适用 / 不适用
 
-- **每周定期复盘**，需要客观数据（活跃时长、会话数、用量、跨周/跨夜会话）支撑。
-- **会话 / 工作区越开越多**，需要清理或对齐仍处于 idle 的长会话。
-- **复盘流程标准化**：把「该看什么、怎么归因」沉淀为可复用模板。
+- **适用**：每周定期复盘；长会话对齐；标准化归因与台账。
+- **不适用**：实时监控；非会话类复盘；替你写公众号成品；替 Agent 读各平台私有存储。
 
-## 不适用场景
+## 输出结构（锁定）
 
-- **实时会话监控 / 告警**：离线周度分析，不常驻推送。
-- **非会话类复盘**：代码审查质量、财务报表等不在范围内。
-- **替你写公众号/周报成品**：只产出结构化底座，正文由你写。
-- **替 Agent 读各平台私有存储**：本 skill **不**内置各产品数据库适配器；采集由宿主 Agent 完成。
+1. **一页看板**：`| 指标 | 数值 | 口径说明 |` + **一句话结论** + 可选「辅助图表」PNG 路径  
+2. **分项目分析**：`### 2.x 主题（时长/会话）` + `| 维度 | 内容 |`（做了什么 / DB cwd / 磁盘核对 / 低效 / 提示词）；其他用简表  
+3. **问题清单 + 根因三类归因** + **做得好的（正面范本）**  
+4. **本周动作台账 ★**：当场已改 / 观察 / 待落实（或待落实→执行结果）  
+5. **待对齐开放会话**  
+6. **自动化概览**  
+7. **事实更正**（可选，有核对推翻时必写）
 
-## 设计原则
-
-**固化底座，不固化成品；Agent 采数，Skill 定结构。**
-
-| 职责 | 谁做 |
-|------|------|
-| 读本平台会话 / 用量 / 历史 | **宿主 Agent**（用自己的工具与权限） |
-| 章节结构、根因三类、动作台账 | **本 skill** |
-| 把标准 JSON 打成 Markdown | **本 skill**（可选 CLI / MCP） |
+**图表约定**：主视觉是看板表；图为 Agent 另行生成的 PNG，在看板用 `辅助图表：\`path\`` 引用。不要用 Mermaid 柱状图顶替定稿版式。
 
 ## 输入
 
-标准事实包 `review-input`（对话中填齐亦可），字段见 `schema/README.md` 与 `schema/review-input.example.json`：
+见 `schema/review-input.example.json` 与 `schema/README.md`。
 
-- `period`：起止日期（必填）
-- `dashboard`：看板指标
-- `projects[]`：分项目
-- `problems[]` / `actions`：问题与动作台账（常需人工补）
-- `open_sessions[]`：待对齐开放会话
-- `automations`：可选
+## 操作流程
 
-## 输出
+1. 安装本 skill。  
+2. Agent 采集会话/用量，**Glob/ls 核对磁盘**后再归因。  
+3. 填 `review-input`（或对话等价结构）；需要图时先出 PNG 再填 `dashboard.charts`。  
+4. 按六章输出，或 `python -m cli --input review-input.json -o YYYY-MM-DD周度复盘.md`。  
+5. 对开放会话当场拍板。
 
-固定六章 Markdown：一页看板、分项目分析、问题+根因三类归因、动作台账、待对齐开放会话、自动化概览。
-
-## 其他约束
-
-- 归因三类：思路 / 记忆 / 流程；禁止一刀切「收敛到单一工作区」。
-- 长会话须先读内容/标题再处置，不能只看时长。
-- 跨周阈值建议 >48h；跨夜 idle 建议次日 06:00 后仍活跃/未关。
-- 可选渲染器仅依赖 Python ≥ 3.10 标准库；无网络、无密钥。
-
-## 如何使用 / 操作流程
-
-1. **安装**本 skill 到所用 Agent 的 skills 目录（或 ClawHub：`openclaw skills install weekly-review`）。
-2. **Agent 采集**：用本平台能力汇总本周会话、用量、项目分布、长会话/跨夜列表（不要假设统一 SQLite）。
-3. **填结构**：写入 `review-input` JSON，或在对话中按同名字段组织；问题与改进建议与用户对齐后写入 `problems` / `actions`。
-4. **出报告**（二选一）：
-   - 对话中直接按六章输出 Markdown；或
-   - `python -m cli --input review-input.json -o 周度复盘.md`
-5. **拍板**：对 `open_sessions` 逐条确认关闭 / 续作 / 归档。
-
-### CLI 渲染（可选）
+### CLI
 
 ```bash
 cd {SKILL_DIR}
 python -m cli --input schema/review-input.example.json -o 周度复盘.md
 ```
 
-### MCP（可选）
+### MCP
 
-工具 `run_weekly_review`，参数 `review_input`（对象）。**不接受 db_path**；采集由 Agent 完成后再调用。
-
-```json
-{
-  "mcpServers": {
-    "weekly-review": {
-      "command": "python",
-      "args": ["-m", "mcp_server"],
-      "env": { "PYTHONPATH": "{SKILL_DIR}" }
-    }
-  }
-}
-```
+工具 `run_weekly_review`，参数 `review_input`（对象）。

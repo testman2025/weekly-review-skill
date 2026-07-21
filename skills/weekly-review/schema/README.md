@@ -1,24 +1,25 @@
 # review-input 约定
 
-Agent 采集本平台会话事实后，填入本结构；skill 只做复盘流程与可选 Markdown 渲染。
+对齐定稿模板：`# YYYY-MM-DD 周度复盘（weekly-review skill · 六章结构）`。
 
-## 字段
+Agent 采集事实后填本结构；skill 只渲染结构。**图表**用 `dashboard.charts` 引用已生成的 PNG 路径（辅助图表），不以 Mermaid 为主。
 
-| 字段 | 必填 | 说明 |
-|------|------|------|
-| `period.start` / `period.end` | 是 | `YYYY-MM-DD` |
-| `source.label` | 否 | 数据来源标签，如 `agent-collected` |
-| `source.note` | 否 | 补充说明 |
-| `dashboard` | 建议 | 一页看板指标（小时、credits、会话数等） |
-| `projects[]` | 建议 | 分项目：`name`, `sessions`, `hours`, `credits`, `notes` |
-| `problems[]` | 否 | 问题与根因（思路/记忆/流程） |
-| `actions` | 否 | `done` / `observing` / `pending` |
-| `open_sessions[]` | 否 | 跨周 / 跨夜待对齐 |
-| `automations` | 否 | 自动化运行概览 |
+## 主要字段
 
-完整示例见同目录 `review-input.example.json`。
+| 字段 | 说明 |
+|------|------|
+| `period` | `start` / `end`（必填） |
+| `meta` | `title` / `methodology` / `version_note` / `task_split` |
+| `source.note` | 数据来源一行说明 |
+| `dashboard.metrics[]` | `{name,value,note}` 看板表 |
+| `dashboard.summary` | 一句话结论 |
+| `dashboard.charts[]` | 辅助图 PNG 相对路径 |
+| `projects[]` | `{title, dimensions{做了什么,…}}` 主题分节 |
+| `other_projects[]` | `{name,hours,note}` |
+| `problems[]` / `positives[]` | 问题表 + 正面范本 |
+| `actions` | `done` / `observing` / `pending` |
+| `open_sessions[]` | 待对齐会话 |
+| `automations.narrative` | 自动化概览（条目列表或长文） |
+| `corrections*` | 可选第七章事实更正 |
 
-## 谁负责什么
-
-- **Agent**：用本平台能力读取会话/用量，整理成上述 JSON（或在对话中等价填齐）。
-- **Skill**：规定章节与归因框架；可选 `python -m cli --input …` 渲染 Markdown。
+完整示例：`review-input.example.json`。
