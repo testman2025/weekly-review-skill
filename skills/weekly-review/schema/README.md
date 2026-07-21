@@ -6,15 +6,22 @@ Agent 采集事实后填本结构；skill 只渲染结构。**图表**用 `dashb
 
 ## 图表
 
-渲染时默认在报告同目录生成两张 **SVG**（标准库、无 pip）：
+渲染默认生成两张**定稿样式 SVG**（标准库）：
 
-- `chart-时间分布-YYYY-MM-DD.svg`
-- `chart-归因Token-YYYY-MM-DD.svg`
+1. `chart-时间分布-*.svg` — 横向条形「本周时间投入分布」
+2. `chart-归因Token-*.svg` — 左右双柱「低效条目归因」+「Token 消耗趋势」
 
-报告看板用 Markdown 图片语法嵌入：`![title](path)`。  
-也可用 `--charts-dir` 指定目录，或 `--no-charts` 关闭。
+数据优先读 `charts_data`：
 
-Agent 若已用 ImageGen/其他工具产出 PNG，可直接填 `dashboard.charts` 路径，CLI 不会覆盖已有 charts（除非重新生成）。
+```json
+"charts_data": {
+  "time_distribution": [{ "label": "社媒 Agent 主题", "hours": 15.4 }],
+  "attribution": [{ "label": "【用户】指令模糊", "count": 3 }],
+  "token_trend": [{ "label": "本周", "millions": 2.74 }]
+}
+```
+
+报告用 `![...](path)` 嵌入。`--no-charts` 可关闭。
 
 
 | 字段 | 说明 |

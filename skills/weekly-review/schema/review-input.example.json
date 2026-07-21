@@ -47,10 +47,7 @@
       }
     ],
     "summary": "全周只围绕少数主题；最该记的不是「产出」，而是**复盘前先核对文件系统再下结论**。",
-    "charts": [
-      "周度复盘/chart-时间分布-2026-07-19.png",
-      "周度复盘/chart-归因Token-2026-07-19.png"
-    ]
+    "active_hours": 39
   },
   "projects": [
     {
@@ -76,7 +73,7 @@
   ],
   "other_projects": [
     {
-      "name": "复盘自动化",
+      "name": "复盘项目(自动化)",
       "hours": "≈8.2h",
       "note": "正向：机制落地；单任务过长应加 checkpoint"
     },
@@ -84,8 +81,33 @@
       "name": "测试专家",
       "hours": "≈1.5h",
       "note": "干净：目标清晰无漂移"
+    },
+    {
+      "name": "其他零散",
+      "hours": "≈0.5h",
+      "note": "短任务"
     }
   ],
+  "charts_data": {
+    "time_distribution": [
+      { "label": "社媒 Agent 主题", "hours": 15.4 },
+      { "label": "视频生成主题", "hours": 13.6 },
+      { "label": "复盘项目(自动化)", "hours": 8.2 },
+      { "label": "测试专家", "hours": 1.5 },
+      { "label": "其他零散", "hours": 0.5 }
+    ],
+    "attribution": [
+      { "label": "【用户】指令模糊", "count": 3 },
+      { "label": "【AI】缺收敛约束", "count": 3 },
+      { "label": "合理分工缺索引", "count": 1 },
+      { "label": "重复投入（待核实）", "count": 1 }
+    ],
+    "token_trend": [
+      { "label": "前两周", "millions": 0.34 },
+      { "label": "上周", "millions": 0.87 },
+      { "label": "本周", "millions": 2.74 }
+    ]
+  },
   "problems": [
     {
       "description": "~1/3 指令仍为\"动词+无交付物\"",

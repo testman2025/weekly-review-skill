@@ -51,8 +51,7 @@ def main(argv: list[str] | None = None) -> int:
         print("缺少 period.start", file=sys.stderr)
         return 1
 
-    # 生成并嵌入辅助图表（定稿：时间分布 + 归因/用量）
-    # 若目标目录已有同名 PNG（人工/ImageGen 产出），优先嵌入 PNG，不覆盖。
+    # 始终按定稿样式生成 SVG（横向时间分布 + 双栏归因/Token）
     if not args.no_charts and not args.json:
         charts_dir: Path | None = None
         if args.charts_dir:
@@ -60,29 +59,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.output:
             charts_dir = Path(args.output).expanduser().resolve().parent
         if charts_dir is not None:
-            end = (data.get("period") or {}).get("end") or "week"
-            preferred = [
-                f"chart-时间分布-{end}.png",
-                f"chart-归因Token-{end}.png",
-            ]
-            existing = [n for n in preferred if (charts_dir / n).exists()]
-            if len(existing) == 2:
-                names = existing
-            else:
-                names = write_charts(data, charts_dir)
-                # 半套 PNG 时：有 PNG 用 PNG，其余用新生成的 SVG
-                merged: list[str] = []
-                svg_by_key = {("时间分布" if "时间分布" in n else "归因"): n for n in names}
-                for key, png_name in (
-                    ("时间分布", preferred[0]),
-                    ("归因", preferred[1]),
-                ):
-                    if (charts_dir / png_name).exists():
-                        merged.append(png_name)
-                    else:
-                        merged.append(svg_by_key[key])
-                names = merged
-
+            names = write_charts(data, charts_dir)
             dash = data.setdefault("dashboard", {})
             if args.output:
                 out_parent = Path(args.output).expanduser().resolve().parent
