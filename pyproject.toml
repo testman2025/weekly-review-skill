@@ -1,14 +1,25 @@
 [project]
 name = "weekly-review-skill"
 version = "1.2.3"
-description = "Agent-fed weekly review：宿主 Agent 采集事实，Skill 固化复盘结构与 Markdown 渲染。"
+description = "面向任意 AI Agent 的自动复盘：用量看板、提示词改进、高低效归因、可视化图表、会话清理、定时周报。"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
     { name = "EDY" }
 ]
-keywords = ["weekly-review", "weekly-retro", "mcp", "agent-skill", "productivity", "retrospective"]
+keywords = [
+    "weekly-review",
+    "prompt",
+    "ai-usage",
+    "dashboard",
+    "charts",
+    "token",
+    "automation",
+    "mcp",
+    "agent-skill",
+    "cursor",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

@@ -1,18 +1,24 @@
 ---
 name: weekly-review
 description: >
-  Agent-fed weekly retrospective locked to the six-chapter template
-  (dashboard table + one-liner + optional PNG charts, theme projects,
-  root-cause triage, action ledger, open sessions, automations, optional
-  fact-corrections). Host Agent collects facts; this skill defines structure
-  and can render Markdown. Use for weekly-review / 周度复盘 / 本周复盘.
+  面向任意 AI Agent 自动复盘的 Skill（weekly-review / 复盘 / 提示词优化 / 会话清理）。
+
+  核心能力覆盖：AI 用量与时间看板、提示词复盘与改写建议、高效/低效归因、
+  时间分布与 Token/归因趋势图、开放会话对齐清理、定时自动周报。
+
+  当用户任务涉及周度复盘、用量查看、提示词改进时使用，包括但不限于：
+  Token 花了多少、提示词优化改进、一周总结、工作复盘、复盘可视化报告、
+  清理对话、AI 自动复盘。
 version: 1.2.3
 category: 办公效率
 read_when:
-  - 用户说"做周度复盘 / 本周复盘 / 跑一下 weekly review"
-  - 用户想清理或对齐跨周、跨夜还开着的会话
-  - 用户希望把复盘流程标准化、沉淀成可复用模板
-  - 每周固定时间（如周日）触发复盘
+  - 用户想改进提示词或做提示词复盘/优化
+  - 用户想查看本周 AI 用量、Token 或时间看板
+  - 用户想总结低效与高效并做根因归因
+  - 用户想看复盘可视化报告（时间分布 / 归因 / Token）
+  - 用户想清理或对齐仍开着的对话
+  - 用户想定时/自动做周度复盘
+  - 用户说 weekly-review / 复盘 / /weekly-review
 metadata:
   openclaw:
     requires:
@@ -26,14 +32,14 @@ metadata:
       - windows
 ---
 
-# weekly-review（周度复盘 skill）
+# AI 用量与提示词复盘助手（weekly-review）
 
 **固化底座，不固化成品。** 宿主 Agent 采集本平台事实；输出必须贴合定稿六章模板（参考用户已定稿的周度复盘 Markdown）。
 
 ## 适用 / 不适用
 
-- **适用**：每周定期复盘；长会话对齐；标准化归因与台账。
-- **不适用**：实时监控；非会话类复盘；替你写公众号成品；替 Agent 读各平台私有存储。
+- **适用**：提示词改进；本周 AI 用量看板；高低效归因；复盘可视化图表；开放会话对齐清理；定时/自动周报。
+- **不适用**：实时监控；替你写公众号成品；一键删除会话数据库；skill 内置独立 cron；替 Agent 读各平台私有存储。
 
 ## 输出结构（锁定）
 
@@ -53,11 +59,11 @@ metadata:
 
 ## 操作流程
 
-1. 安装本 skill。  
+1. 安装本 skill（见仓库根 README：`npx skills add` / ClawHub / clone）。  
 2. Agent 采集会话/用量，**Glob/ls 核对磁盘**后再归因。  
 3. 填 `review-input`（或对话等价结构）；需要图时先出 PNG 再填 `dashboard.charts`。  
 4. 按六章输出，或 `python -m cli --input review-input.json -o YYYY-MM-DD周度复盘.md`。  
-5. 对开放会话当场拍板。
+5. 对开放会话当场拍板。定时场景见仓库 `automations/`。
 
 ### CLI
 
