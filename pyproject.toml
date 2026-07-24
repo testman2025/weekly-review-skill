@@ -1,6 +1,6 @@
 [project]
 name = "weekly-review-skill"
-version = "1.2.3"
+version = "1.2.4"
 description = "面向任意 AI Agent 的自动复盘：用量看板、提示词改进、高低效归因、可视化图表、会话清理、定时周报。"
 readme = "README.md"
 license = { text = "MIT" }
