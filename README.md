@@ -1,6 +1,6 @@
 # weekly-review-skill（AI 用量与提示词复盘助手）
 
-![版本](https://img.shields.io/badge/version-1.2.4-blue)
+![版本](https://img.shields.io/badge/version-1.2.5-blue)
 ![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 [![skills.sh](https://skills.sh/b/testman2025/weekly-review-skill)](https://skills.sh/testman2025/weekly-review-skill)
@@ -112,7 +112,7 @@ clawhub login
 clawhub skill publish ./skills/weekly-review \
   --slug weekly-review \
   --name "Weekly Review" \
-  --version 1.2.4 \
+  --version 1.2.5 \
   --changelog "Discoverability: concise Chinese description for prompts, usage, charts, session cleanup, auto review."
 ```
 
